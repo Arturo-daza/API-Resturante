@@ -1,6 +1,6 @@
 from app.models.reserva_model import ReservaModel
 from app.schemas.reserva_schema import Reserva, ReservaCreate
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 class ReservaService:
     @staticmethod
@@ -82,4 +82,10 @@ class ReservaService:
         fecha_inicio: datetime,
         fecha_fin: datetime
     ) -> list[Reserva]:
+        # Convierte a UTC si es necesario
+        if fecha_inicio.tzinfo is None:
+            fecha_inicio = fecha_inicio.replace(tzinfo=timezone.utc)
+        if fecha_fin.tzinfo is None:
+            fecha_fin = fecha_fin.replace(tzinfo=timezone.utc)
+        
         return await ReservaModel.obtener_por_rango(fecha_inicio, fecha_fin)

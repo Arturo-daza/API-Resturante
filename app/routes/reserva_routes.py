@@ -1,7 +1,8 @@
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.schemas.reserva_schema import DisponibilidadQuery, ReservaCreate, Reserva
 from app.services.reserva_service import ReservaService
+from app.schemas.fecha_schema import FechaRango
 
 router = APIRouter()
 
@@ -55,7 +56,12 @@ async def verificar_disponibilidad(
     
 @router.get("/reservas/rango-horario/", response_model=list[Reserva])
 async def listar_por_rango(
-    fecha_inicio: datetime,
-    fecha_fin: datetime
+    fecha_inicio: datetime = Query(..., description="Fecha inicio del rango"),
+    fecha_fin: datetime = Query(..., description="Fecha fin del rango")
 ):
-    return await ReservaService.listar_por_rango(fecha_inicio, fecha_fin)
+    # Validar usando el esquema
+    fecha_rango = FechaRango(fecha_inicio=fecha_inicio, fecha_fin=fecha_fin)
+    return await ReservaService.listar_por_rango(
+        fecha_rango.fecha_inicio,
+        fecha_rango.fecha_fin
+    )

@@ -40,14 +40,12 @@ class ReservaBase(BaseModel):
                 raise ValueError("La reserva debe ser entre 4:00 PM y 10:00 PM")
         return values
 
-# Modelo para crear una reserva (POST)
 class ReservaCreate(ReservaBase):
     pass
 
 class Reserva(ReservaBase):
     id: str = Field(alias="_id")
     
-     # Validador para convertir ObjectId a str
     @model_validator(mode="before")
     def convert_objectid_to_str(cls, data: dict) -> dict:
         if "_id" in data and isinstance(data["_id"], ObjectId):
@@ -56,7 +54,7 @@ class Reserva(ReservaBase):
 
     class Config:
         from_attributes = True
-        populate_by_name = True  # Permite usar alias en la inicialización
+        populate_by_name = True  
         
 class DisponibilidadQuery(BaseModel):
     mesa: int = Field(..., ge=1, le=5)

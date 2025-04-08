@@ -9,7 +9,6 @@ class ReservaModel:
     async def crear(reserva: ReservaCreate) -> Reserva:
         # Inserta en MongoDB
         result = await reservas.insert_one(reserva.dict())
-        # Obtiene el documento insertado y convierte _id a string
         reserva_db = await reservas.find_one({"_id": result.inserted_id})
         return Reserva(**reserva_db, id=str(reserva_db["_id"]))
 
@@ -89,9 +88,12 @@ class ReservaModel:
         fecha_inicio: datetime,
         fecha_fin: datetime
     ) -> list[Reserva]:
+       
         query = {
-            "hora_inicio": {"$gte": fecha_inicio},
-            "hora_inicio": {"$lt": fecha_fin}
+            "hora_inicio": {
+                "$gte": fecha_inicio,  
+                "$lt": fecha_fin     
+            }
         }
         reservas_db = await reservas.find(query).to_list(length=None)
         return [
